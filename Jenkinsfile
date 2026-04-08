@@ -3,11 +3,7 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                git 'https://github.com/VipulChoudhary-cmd/Vyapari.git'
-            }
-        }
+        
 
         stage('Install Backend') {
             steps {
