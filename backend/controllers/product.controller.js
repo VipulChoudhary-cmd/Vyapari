@@ -26,6 +26,23 @@ export const getFeaturedProducts = async (req, res) => {
 	}
 };
 
+
+export const getProductById = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const product = await Product.findById(id);
+
+		if (!product) {
+			return res.status(404).json({ message: "Product not found" });
+		}
+
+		res.json(product);
+	} catch (error) {
+		console.log("Error in getProductById controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
+
 export const createProduct = async (req, res) => {
 	try {
 		const { name, description, price, image, category } = req.body;
@@ -110,5 +127,44 @@ export const toggleFeaturedProduct = async (req, res) => {
 	} catch (error) {
 		console.log("Error in toggleFeaturedProduct controller", error.message);
 		res.status(500).json({ message: "Server error", error: error.message });
+	}
+};
+
+export const searchProducts = async (req, res) => {
+	try {
+		const { query } = req.query;
+
+		if (!query || query.trim() === "") {
+			return res.status(400).json({
+				success: false,
+				message: "Search query is required",
+			});
+		}
+
+		
+		const searchRegex = query.replace(/[-\s]/g, '[-\\s]?');
+		
+		const products = await Product.find({
+			$or: [
+				{ name: { $regex: searchRegex, $options: "i" } },
+				{ category: { $regex: searchRegex, $options: "i" } },
+				{ description: { $regex: searchRegex, $options: "i" } },
+			],
+		}).select("-__v");
+
+		console.log(`Search query: "${query}", Found: ${products.length} products`); // Debug log
+
+		res.status(200).json({
+			success: true,
+			count: products.length,
+			products: products,
+		});
+	} catch (error) {
+		console.error("Search error:", error);
+		res.status(500).json({
+			success: false,
+			message: "Error searching products",
+			error: error.message,
+		});
 	}
 };
