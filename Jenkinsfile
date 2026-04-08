@@ -37,12 +37,12 @@ pipeline {
             }
         }
 
-        stage('Run App') {
-            steps {
-                script {
-                    docker.run("-d -p 3000:3000 vyapari-app")
-                }
-            }
-        }
+        sstage('Run App') {
+    steps {
+        bat 'docker stop vyapari-container || exit 0'
+        bat 'docker rm vyapari-container || exit 0'
+        bat 'docker run -d -p 3000:3000 --name vyapari-container vyapari-app'
+    }
+}
     }
 }
