@@ -37,7 +37,7 @@ pipeline {
             }
         }
 
-        sstage('Run App') {
+        stage('Run App') {
     steps {
         bat 'docker stop vyapari-container || exit 0'
         bat 'docker rm vyapari-container || exit 0'
